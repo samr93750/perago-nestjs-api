@@ -21,5 +21,4 @@ export class Photo {
   @ManyToOne(() => Member, (member) => member.photos, { nullable: true })
   @JoinColumn({ name: 'memberId' })
   member: Member;
-
 }

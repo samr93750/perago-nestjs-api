@@ -1,17 +1,22 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
-  UploadedFile,
+  Param,
+  Delete,
   UseInterceptors,
+  UploadedFile,
+  ParseUUIDPipe,
+  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PhotoService } from '../photos/photos.service';
-import { CreatePhotoDto } from '../common/dto/create-photo.dto';
-import { Photo } from '../common/entities/photo.entity';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { Express } from 'express';
+import { PhotoService } from './photos.service';
+import { CreatePhotoDto } from '../common/dto/create-photo.dto';
+import { UpdatePhotoDto } from '../common/dto/update-photo-dto';
+import { Photo } from '../common/entities/photo.entity';
 
 @Controller('photos')
 export class PhotoController {
@@ -36,5 +41,29 @@ export class PhotoController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Photo> {
     return this.photoService.create(createPhotoDto, file);
+  }
+
+  @Get()
+  findAll(): Promise<Photo[]> {
+    return this.photoService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Photo> {
+    return this.photoService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updatePhotoDto: UpdatePhotoDto,
+  ): Promise<Photo> {
+    return this.photoService.update(id, updatePhotoDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this.photoService.remove(id);
+    
   }
 }

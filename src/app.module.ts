@@ -13,6 +13,7 @@ import { PhotoModule } from './photos/photos.module';
 import { Photo } from './common/entities/photo.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MembersModule } from './members/members.module';
 
 @Module({
   imports: [
@@ -31,6 +32,8 @@ import { join } from 'path';
       serveRoot: '/uploads',
     }),
     TypeOrmModule.forFeature([Position, Member, Photo]),
+    PhotoModule,
+    MembersModule,
     PhotoModule,
   ],
   controllers: [AppController, PositionsController, MembersController],
