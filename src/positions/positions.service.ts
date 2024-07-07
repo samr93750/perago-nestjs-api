@@ -17,11 +17,12 @@ export class PositionsService {
   }
 
   async findAll(): Promise<Position[]> {
-    return this.positionsRepository.find({ relations: ['children'] });
+    return this.positionsRepository.find();
   }
 
   async findOne(id: string): Promise<Position> {
-    const position = await this.positionsRepository.findOne({where:{id}, 
+    const position = await this.positionsRepository.findOne({
+      where: { id },
       relations: ['children'],
     });
     if (!position) {
@@ -59,11 +60,27 @@ export class PositionsService {
     return position.children;
   }
 
-  async findHierarchy(): Promise<Position[]> {
-    const roots = await this.positionsRepository.find({
-      where: { parentId: null },
-      relations: ['children'],
+   async findHierarchy(): Promise<Position[]> {
+    const positions = await this.positionsRepository.find();
+    const positionMap: { [key: string]: Position } = {};
+    // Create a map of positions
+    positions.forEach(position => {
+      position.children = [];
+      positionMap[position.id] = position;
     });
-    return roots;
+    const hierarchy: Position[] = [];
+    // Organize positions into a hierarchy
+    positions.forEach(position => {
+      if (position.parentId) {
+        const parent = positionMap[position.parentId];
+        if (parent) {
+          parent.children.push(position);
+        }
+      } else {
+        hierarchy.push(position);
+      }
+    });
+    return hierarchy;
   }
+
 }

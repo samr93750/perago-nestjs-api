@@ -29,4 +29,5 @@ export class Position {
 
   @OneToMany(() => Position, (position) => position.parent)
   children: Position[];
+    members: any;
 }
