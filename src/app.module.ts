@@ -9,6 +9,10 @@ import { PositionsController } from './positions/positions.controller';
 import { AppController } from './app.controller';
 import { PositionsService } from './positions/positions.service';
 import { AppService } from './app.service';
+import { PhotoModule } from './photos/photos.module';
+import { Photo } from './common/entities/photo.entity';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -19,10 +23,15 @@ import { AppService } from './app.service';
       username: 'postgres',
       password: 'samr1493',
       database: 'org_user',
-      entities: [Position,Member],
+      entities: [Position, Member, Photo], // Add Photo here
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Position, Member]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
+    TypeOrmModule.forFeature([Position, Member, Photo]),
+    PhotoModule,
   ],
   controllers: [AppController, PositionsController, MembersController],
   providers: [AppService, PositionsService, MembersService],

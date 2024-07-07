@@ -3,10 +3,11 @@ import {
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { Position } from './positions.entity';
-
+import { Photo } from './photo.entity';
 
 @Entity()
 export class Member {
@@ -20,4 +21,6 @@ export class Member {
   @JoinColumn({ name: 'positionId' })
   position: Position;
 
+  @OneToMany(() => Photo, (photo) => photo.member, { nullable: true })
+  photos: Photo[];
 }
