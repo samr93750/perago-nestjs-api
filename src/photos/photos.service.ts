@@ -8,6 +8,7 @@ import { Member } from '../common/entities/member.entity';
 
 @Injectable()
 export class PhotoService {
+    logger: any;
   constructor(
     @InjectRepository(Photo)
     private photoRepository: Repository<Photo>,
@@ -15,19 +16,35 @@ export class PhotoService {
     private memberRepository: Repository<Member>,
   ) {}
 
-  async create(
+   async create(
     createPhotoDto: CreatePhotoDto,
     file: Express.Multer.File,
   ): Promise<Photo> {
+    const { name, memberId } = createPhotoDto;
+
+    // // Log the file information
+    // this.logger.debug(`Received file: ${file.originalname} (${file.mimetype})`);
+    // this.logger.debug(`Stored file: ${file.filename}`);
+
+    // Find the member associated with the photo
     const member = await this.memberRepository.findOne({
-      where: { id: createPhotoDto.memberId },
+      where: { id: memberId },
     });
 
+    if (!member) {
+      throw new NotFoundException(`Member with ID ${memberId} not found`);
+    }
+
+    // Create a new photo entity
     const photo = new Photo();
-    photo.name = createPhotoDto.name;
+    photo.name = name;
     photo.filename = file.filename;
     photo.member = member;
 
+    // Log the photo entity before saving
+    // this.logger.debug(`Creating photo: ${JSON.stringify(photo)}`);
+
+    // Save the photo entity in the database
     return this.photoRepository.save(photo);
   }
 
@@ -47,13 +64,23 @@ export class PhotoService {
   }
 
   async update(id: string, updatePhotoDto: UpdatePhotoDto): Promise<Photo> {
+    const { name } = updatePhotoDto;
+
+    // Find the photo to update
     const photo = await this.findOne(id);
-    photo.name = updatePhotoDto.name;
+
+    // Update photo properties
+    photo.name = name;
+
+    // Save the updated photo entity
     return this.photoRepository.save(photo);
   }
 
   async remove(id: string): Promise<void> {
+    // Find the photo to remove
     const photo = await this.findOne(id);
+
+    // Remove the photo from the database
     await this.photoRepository.remove(photo);
   }
 }

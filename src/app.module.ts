@@ -29,7 +29,7 @@ import { MembersModule } from './members/members.module';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads',
+      serveRoot: '/photos',
     }),
     TypeOrmModule.forFeature([Position, Member, Photo]),
     PhotoModule,
